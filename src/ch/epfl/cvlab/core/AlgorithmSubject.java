@@ -114,7 +114,8 @@ public class AlgorithmSubject extends Observable {
     public void setSelectedBinary(URI binaryName) {
       if(binariesList.contains(binaryName))
         this.selectedBinary = binaryName;
-      log("Binary " + binaryName + " not found.");     
+      else
+        log("Binary " + binaryName + " not found.");     
     }
     
     public void setBinary(String binaryName){

@@ -64,7 +64,7 @@ public class SystemCalls {
     
     private static BufferedReader executeCommand(String[] cmd) throws IOException{
             
-      System.out.println("Executing process with command array: " + cmd);    
+      System.out.println("Executing process with command array: " + Arrays.toString(cmd));    
       Process p = Runtime.getRuntime().exec(cmd); //cmd will be tokenized
       BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream()));
       return is;
