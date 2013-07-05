@@ -3,6 +3,7 @@ package ch.epfl.cvlab.nativePlugin.UI;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.File;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -21,7 +22,7 @@ public class Utils {
     return result;
   }
   
-  public static LinkedList<File> listModels(){
+  public static LinkedList<URI> listModels(){
        
     File folder = new File(modelDir);
     File[] listOfFiles = folder.listFiles();
@@ -30,13 +31,13 @@ public class Utils {
       return null;
     }
     String fileName;
-    LinkedList<File> modelsList = new LinkedList<File>();
+    LinkedList<URI> modelsList = new LinkedList<URI>();
 
     for (int i=0; i<listOfFiles.length; i++){
       if (listOfFiles[i].isFile()){
         fileName = listOfFiles[i].getName();
         if(fileName.endsWith(".txt") && fileName.startsWith("model")){
-          modelsList.add(listOfFiles[i]);
+          modelsList.add(listOfFiles[i].toURI());
           System.out.println("Found model: " + fileName);
         }
       }

@@ -38,7 +38,7 @@ public class SystemCalls {
       return executables.get(index);
     }
      
-    public static BufferedReader executeCommand(URI executable, String configFilenamePath, String modelFilenamePath) throws IOException{
+    public static Process executeCommand(URI executable, String configFilenamePath, String modelFilenamePath) throws IOException{
       if(modelFilenamePath == null){
         return executeCommand(executable, configFilenamePath);
       }
@@ -47,14 +47,14 @@ public class SystemCalls {
       
     }
     
-    public static BufferedReader executeCommand(URI executable, String configFilenamePath) throws IOException{
+    public static Process executeCommand(URI executable, String configFilenamePath) throws IOException{
       
       String cmd[] = {new File(executable).getAbsolutePath() + " " + configFilenamePath};
       return executeCommand(cmd);
       
     }
     
-    public static BufferedReader executeCommand(URI executable, String configFilenamePath, String[] extraArgs) throws IOException{
+    public static Process executeCommand(URI executable, String configFilenamePath, String[] extraArgs) throws IOException{
       
       String[] cmd = {new File(executable).getAbsolutePath(), configFilenamePath};
       cmd = Utils.concat(cmd, extraArgs);
@@ -62,12 +62,12 @@ public class SystemCalls {
       
     }
     
-    private static BufferedReader executeCommand(String[] cmd) throws IOException{
+    private static Process executeCommand(String[] cmd) throws IOException{
             
       System.out.println("Executing process with command array: " + Arrays.toString(cmd));    
       Process p = Runtime.getRuntime().exec(cmd); //cmd will be tokenized
-      BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream()));
-      return is;
+     
+      return p;
       
   }
     

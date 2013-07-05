@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
@@ -37,16 +38,28 @@ public class SwingGUI extends JFrame implements Observer {
   private final File currentDirectory = null;
   private AlgorithmSubject subject;
   
+  private static AlgorithmWorker algorithmWorker;
+  
   private final JTextArea configText;
   private final JTextArea log;
   private final JTextArea progressText;
   private final JComboBox modelComboBox;
+  
+  private final JButton btnTrain = new JButton("Train");
+  private final JButton btnPredict = new JButton("Predict");
+
 
   
-  public SwingGUI(AlgorithmSubject algorithmSubject) {
+  /**
+ * @param algorithmSubject
+ */
+public SwingGUI(AlgorithmSubject algorithmSubject) {
+    
+    this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     
     this.subject = algorithmSubject;
-    
+    subject.setModelList(new ArrayList<URI>(Utils.listModels()));
+
     JPanel config = new JPanel();
     getContentPane().add(config, BorderLayout.CENTER);
     
@@ -58,6 +71,7 @@ public class SwingGUI extends JFrame implements Observer {
             
     log = new JTextArea();
     logPane.setViewportView(log);
+    log.setText("");
     
     JMenuBar menuBar = new JMenuBar();
     setJMenuBar(menuBar);
@@ -86,12 +100,8 @@ public class SwingGUI extends JFrame implements Observer {
       }
     });
 
-    final JProgressBar progressBar = new JProgressBar();
-    
-    final JButton btnTrain = new JButton("Train");
-        
-    final AlgorithmWorker algorithmWorker = new AlgorithmWorker(subject);
-    
+    final JProgressBar progressBar = new JProgressBar();    
+
     final PropertyChangeListener progressListener = new PropertyChangeListener() {
       @Override
       public void propertyChange(PropertyChangeEvent event){
@@ -101,18 +111,22 @@ public class SwingGUI extends JFrame implements Observer {
       }
     };
     
+    algorithmWorker = new AlgorithmWorker(subject);  
     algorithmWorker.addPropertyChangeListener(progressListener);
     
+    /*
     btnTrain.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
         System.out.println("running train ");
         subject.selectTrainBinary();
+        AlgorithmWorker algorithmWorker = new AlgorithmWorker(subject);
         algorithmWorker.execute();
       }
     });
+    */
     
-    JButton btnPredict = new JButton("Predict");
+    /*
     btnPredict.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
@@ -120,10 +134,13 @@ public class SwingGUI extends JFrame implements Observer {
         subject.selectPredictBinary();
         String model = new File(subject.getModel()).getAbsolutePath();
         String[] extraArgs = {Constants.predictFlag,model};
+        AlgorithmWorker algorithmWorker = new AlgorithmWorker(subject);
         algorithmWorker.setExtraArgs(extraArgs);
+
         algorithmWorker.execute();
       }
     });
+    */
     
     JButton btnOutput = new JButton("Output");
     
@@ -137,8 +154,9 @@ public class SwingGUI extends JFrame implements Observer {
     modelComboBox.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         JComboBox cb = (JComboBox)e.getSource();
-        File modelFile = (File)cb.getSelectedItem();
-        subject.setModel(modelFile.toURI());
+        int modelIndex = cb.getSelectedIndex();
+        if(modelIndex >= 0)
+            subject.setModel(subject.getModelList().get(modelIndex));
       }
     });
     
@@ -150,7 +168,7 @@ public class SwingGUI extends JFrame implements Observer {
     btnConfig.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent e) {
-        JFileChooser fileChooser = new JFileChooser();
+        JFileChooser fileChooser = new JFileChooser(new File("."));
         int returnVal = fileChooser.showOpenDialog(e.getComponent());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
           File file = fileChooser.getSelectedFile();
@@ -285,32 +303,35 @@ public class SwingGUI extends JFrame implements Observer {
     
   }
   
+  public void init(){
+      
+      //TODO if the number of binaries were to change, change buttons to comboboxes
+               
+          SSVMMouseAdapter trainMouseAdapter = new SSVMMouseAdapter(subject, subject.getTrainBinary(), algorithmWorker);
+          btnTrain.addMouseListener(trainMouseAdapter);
+          
+          SSVMMouseAdapter predictMouseAdapter = new SSVMMouseAdapter(subject, subject.getPredictBinary(), algorithmWorker);
+          btnPredict.addMouseListener(predictMouseAdapter);
+          
+  }
+  
   public void showConfigSubject(){
-    System.out.println("[GUI] change detected");
 
     configPath.setText(new File(subject.getConfig()).getPath());
     configText.setText(subject.getConfigText());
     log.setText(subject.getLog());
     modelComboBox.removeAllItems();
-    System.out.println("[GUI] change detected: " + subject.getModelList().size());
-    
+  
     for(Iterator<URI> it = subject.getModelList().iterator(); it.hasNext();){
-      System.out.println("[GUI] change " + it.hasNext());
-      //TODO Swing is not threadsafe: MultiThread violation!!
+      //FIXME Swing is not thread safe: fix potential concurrency violation! (EDT is doing it so it might be ok)
       modelComboBox.addItem(new File(it.next()).getName());
-      System.out.println("[GUI] change asd");
-
-      System.out.println("[GUI] change " + it.hasNext());
     }
-    System.out.println("[GUI] change deted");
-       
+
 }
   
   @Override
   public void update(Observable config, Object ignored) {
-      System.out.println("[GUI] updating Swing GUI");
       if (config instanceof AlgorithmSubject) {
-         System.out.println("[GUI] change detected");
           this.subject = (AlgorithmSubject) config;
           showConfigSubject();
           System.out.println("[GUI] ConfigSubject Updated");
