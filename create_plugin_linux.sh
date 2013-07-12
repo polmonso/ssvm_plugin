@@ -3,7 +3,7 @@
 # create plugin
 cd src
 
-javac -cp ~/code/Fiji.app/jars/*:.:lib -d ../bin ch/epfl/cvlab/main/SSVM.java
+javac -source 1.6 -target 1.6 -cp ~/code/Fiji.app/jars/*:.:lib -d ../bin ch/epfl/cvlab/main/SSVM.java
 
 cd ..
 
