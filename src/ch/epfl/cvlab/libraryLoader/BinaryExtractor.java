@@ -131,7 +131,9 @@ public class BinaryExtractor {
             close(fileStream);
         }
 
-        tempFile.setExecutable(true);
+        if(tempFile.setExecutable(true) == false) {
+          System.err.println("Error setting executable permission. Do you have write permission?");
+        }
         return (tempFile.toURI());
     }
 

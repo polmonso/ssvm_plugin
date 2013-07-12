@@ -62,7 +62,7 @@ public class AlgorithmWorker extends SwingWorker<Integer, String> {
     System.out.println("[Worker " + subject.getSelectedBinary() + "] executing binary with config: " + subject.getConfig());
     String binName = new File(subject.getSelectedBinary()).getName();
     System.out.println("[Worker " + binName + "] executing binary with " + subject.getConfig().getPath());
-    subject.log("[Worker " + binName + "] executing binary " + binName + " with parameters" + subject.getConfig().getPath() + " " + extraArgs);
+    subject.log("[Worker " + binName + "] executing binary " + binName + " with parameters: " + subject.getConfig().getPath() + " " + extraArgs);
     Process p = SystemCalls.executeCommand(subject.getSelectedBinary(), new File(subject.getConfig()).getCanonicalPath(), extraArgs);
   //TODO read error stream as well (return process for example)
     

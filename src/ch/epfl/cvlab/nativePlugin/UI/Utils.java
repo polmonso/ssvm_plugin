@@ -27,8 +27,13 @@ public class Utils {
     File folder = new File(modelDir);
     File[] listOfFiles = folder.listFiles();
     if(listOfFiles == null){
-      System.err.println(folder.getAbsolutePath() + " is not a directory");
-      return null;
+      System.err.println(folder.getAbsolutePath() + " is not a directory or does not exist");
+      folder = new File(".");
+      listOfFiles = folder.listFiles();
+      if(listOfFiles == null){
+        System.err.println(folder.getAbsolutePath() + " is not a directory or does not exist");
+        return null;
+      }
     }
     String fileName;
     LinkedList<URI> modelsList = new LinkedList<URI>();
