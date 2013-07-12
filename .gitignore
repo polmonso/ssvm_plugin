@@ -6,7 +6,5 @@
 compile.sh
 .DS_Store
 ._.DS_Store
-.classpath
-.project
-.settings/
 executables
+sampledata
