@@ -51,14 +51,20 @@ public class AlgorithmSubject extends Observable {
       String osname = System.getProperty("os.name").toLowerCase();
       String arch = System.getProperty("os.arch").toLowerCase();
       String[] binariesNamesList = new String[2];
+      String[] dependencies = new String[2];
       if(osname.contains("windows")){
           binariesNamesList[0] = "train.exe";
           binariesNamesList[1] = "predict.exe";
+          //FIXME eliminate dependency to cuda dll
+          dependencies[0] = "cudart64_50_35.dll";
+          dependencies[1] = "npp64_50_35.dll";
+          BinaryExtractor.extractBinaries(dependencies);
       }else if(osname.contains("nix") || osname.contains("nux") || osname.contains("aix")){
           binariesNamesList[0] = "train";
           binariesNamesList[1] = "predict";
       }else if(osname.contains("mac")){
-           throw new IOException("Mac OS is not supported yet");
+          binariesNamesList[0] = "train";
+          binariesNamesList[1] = "predict";
       }else{
            throw new IOException("Unsupported OS or architecture");
       }

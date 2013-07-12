@@ -62,6 +62,7 @@ public class AlgorithmWorker extends SwingWorker<Integer, String> {
     System.out.println("[Worker " + subject.getSelectedBinary() + "] executing binary with config: " + subject.getConfig());
     String binName = new File(subject.getSelectedBinary()).getName();
     System.out.println("[Worker " + binName + "] executing binary with " + subject.getConfig().getPath());
+    subject.log("[Worker " + binName + "] executing binary " + binName + " with parameters" + subject.getConfig().getPath() + " " + extraArgs);
     Process p = SystemCalls.executeCommand(subject.getSelectedBinary(), new File(subject.getConfig()).getCanonicalPath(), extraArgs);
   //TODO read error stream as well (return process for example)
     
@@ -74,6 +75,7 @@ public class AlgorithmWorker extends SwingWorker<Integer, String> {
     BufferedReader is = new BufferedReader(new InputStreamReader(p.getInputStream()));
 //    BufferedReader is = new BufferedReader(new InputStreamReader(p.getErrorStream()));
     
+    subject.log("[Worker " + binName + "] Wait process completion");
     int progress = 0;
     String line;
     while((line = is.readLine()) != null){
@@ -82,8 +84,9 @@ public class AlgorithmWorker extends SwingWorker<Integer, String> {
       //TODO implement proper progress by reading input stream data
       progress++;
       if(progress % 1 == 0)
-          setProgress(progress);
+          setProgress(progress%100);
     }
+    subject.log("[Worker " + binName + "] Done. Model list: " + Utils.listModels().toString());
     System.out.println("[Worker " + binName + "] Done. Model list: " + Utils.listModels().toString());
     
     subject.setModelList(new ArrayList<URI>(Utils.listModels()));
@@ -96,10 +99,19 @@ public class AlgorithmWorker extends SwingWorker<Integer, String> {
     try{
       int result = get();
       subject.log("Result: " + result);
+      if(result == 0){
+          subject.log("Process successful");
+          setProgress(100);
+      }
+      
     } catch (final CancellationException e) {
       subject.log("The process was cancelled");
     } catch (final Exception e) {
-      subject.log("The process failed");
+      subject.log("Exception caught: The process failed");
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      e.printStackTrace(pw);
+      subject.log("Stacktrace: " + sw.toString());
     }
   }
 

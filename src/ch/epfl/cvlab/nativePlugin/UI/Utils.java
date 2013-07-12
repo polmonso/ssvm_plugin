@@ -14,7 +14,7 @@ public class Utils {
   
   public static String lastDir = ".";
   
-  public static String modelDir = ".";
+  public static String modelDir = "./parameter_vector0";
   
   public static <T> T[] concat(T[] first, T[] second) {
     T[] result = Arrays.copyOf(first, first.length + second.length);
@@ -36,7 +36,7 @@ public class Utils {
     for (int i=0; i<listOfFiles.length; i++){
       if (listOfFiles[i].isFile()){
         fileName = listOfFiles[i].getName();
-        if(fileName.endsWith(".txt") && fileName.startsWith("model")){
+        if(fileName.endsWith(".txt") && (fileName.startsWith("model") || fileName.startsWith("iteration"))){
           modelsList.add(listOfFiles[i].toURI());
           System.out.println("Found model: " + fileName);
         }

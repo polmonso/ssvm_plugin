@@ -55,7 +55,7 @@ public class SwingGUI extends JFrame implements Observer {
  */
 public SwingGUI(AlgorithmSubject algorithmSubject) {
     
-    this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+    //this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     
     this.subject = algorithmSubject;
     subject.setModelList(new ArrayList<URI>(Utils.listModels()));
