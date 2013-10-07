@@ -58,7 +58,13 @@ public SwingGUI(AlgorithmSubject algorithmSubject) {
     //this.setDefaultCloseOperation(EXIT_ON_CLOSE);
     
     this.subject = algorithmSubject;
-    subject.setModelList(new ArrayList<URI>(Utils.listModels()));
+
+    try {
+        subject.setModelList(new ArrayList<URI>(Utils.listModels()));
+    } catch (FileNotFoundException e2) {
+        System.err.println(e2.getMessage());
+        subject.setModelList(new ArrayList<URI>());
+    }
 
     JPanel config = new JPanel();
     getContentPane().add(config, BorderLayout.CENTER);

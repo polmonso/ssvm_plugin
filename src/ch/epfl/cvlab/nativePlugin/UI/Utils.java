@@ -3,6 +3,7 @@ package ch.epfl.cvlab.nativePlugin.UI;
 import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -22,18 +23,21 @@ public class Utils {
     return result;
   }
   
-  public static LinkedList<URI> listModels(){
+  public static LinkedList<URI> listModels() throws FileNotFoundException{
        
     File folder = new File(modelDir);
+    if(!folder.exists()){
+        System.err.println(folder.getAbsolutePath() + " is not a directory or does not exist");
+        folder = new File(".");
+        if(!folder.exists()){
+            System.err.println(folder.getAbsolutePath() + " is not a directory or does not exist");
+            throw new FileNotFoundException("model list find not found");
+        }
+    }
     File[] listOfFiles = folder.listFiles();
     if(listOfFiles == null){
-      System.err.println(folder.getAbsolutePath() + " is not a directory or does not exist");
-      folder = new File(".");
-      listOfFiles = folder.listFiles();
-      if(listOfFiles == null){
-        System.err.println(folder.getAbsolutePath() + " is not a directory or does not exist");
-        return null;
-      }
+      System.err.println("Files could not be listed in" + folder.getAbsolutePath());
+        throw new FileNotFoundException("Files could not be listed");
     }
     String fileName;
     LinkedList<URI> modelsList = new LinkedList<URI>();
